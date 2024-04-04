@@ -23,10 +23,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImp userDetailsService;
-
     @Autowired
     private OidcUserService oidcUserService;
-
     @Autowired
     private ApplicationContext context;
 
@@ -38,6 +36,18 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/signup")).permitAll()
+                        // unauthenticated users can read restaurants and reviews.
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/restaurants")).permitAll()
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/reviews/show/**")).permitAll()
+                        // members and admins can also add reviews
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/reviews/add/**"))
+                        .hasAnyRole("USER", "ADMIN")
+                        // admins can add restaurants
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/restaurants/add")).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

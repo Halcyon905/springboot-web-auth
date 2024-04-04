@@ -26,12 +26,13 @@ public class SignupService {
     }
 
     public void createMember(SignupRequest dto) {
-        Member dao = modelMapper.map(dto, Member.class);
-        dao.setCreatedAt(Instant.now());
+        Member new_member = modelMapper.map(dto, Member.class);
+        new_member.setCreatedAt(Instant.now());
+        new_member.setRole("ROLE_USER");
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
-        dao.setPassword(hashedPassword);
-        repository.save(dao);
+        new_member.setPassword(hashedPassword);
+        repository.save(new_member);
     }
 
     public Member getMember(String username) {
